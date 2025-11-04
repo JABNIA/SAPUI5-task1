@@ -36,7 +36,7 @@
                         }"
                         text="{
                             path: 'invoice>Status',
-                            formatter: 'Formatter.statusText'
+                            formatter: 'Formatter.statusText.bind($controller)'
                         }"
                     />
                 </firstStatus>
