@@ -8,6 +8,15 @@
         "type": "application",
         "applicationVersion": {
             "version": "1.0.0"
+        },
+        "dataSources": {
+            "invoiceRemote": {
+                "uri": "V2/Northwind/Northwind.svc/",
+                "type": "OData",
+                "settings": {
+                    "odataVersion": "2.0"
+                }
+            }
         }
     },
     "sap.ui": {
@@ -17,6 +26,7 @@
             "tablet": true,
             "phone": true
         }
+        
     },
     "sap.ui5": {
         "dependencies": {
@@ -25,6 +35,10 @@
                 "sap.ui.core": {},
                 "sap.m": {},
                 "sap.ui.layout": {}
+            },
+            "contentDensities" : {
+                "compact" : "true",
+                "cozy" : "true"
             }
         },
         "models": {
@@ -37,9 +51,9 @@
                 }
             },
             "invoice": {
-                "type": "sap.ui.model.json.JSONModel",
-                "uri": "Invoices.json"
-            }
+                    "type" : "sap.ui.model.json.JSONModel",
+                    "uri" : "Invoices.json"
+                }
         },
         "rootView": {
             "viewName": "ui5.walkthrough.view.App",
@@ -49,9 +63,41 @@
         "resources": {
             "css": [
                 {
-                "uri": "css/style.css"
+                    "uri": "css/style.css"
+                }
+            ]
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "type": "View",
+                "viewType": "XML",
+                "path": "ui5.walkthrough.view",
+                "controlId": "app",
+                "controlAggregation": "pages"
+            },
+            "routes": [
+                {
+                    "pattern": "",
+                    "name": "overview",
+                    "target": "overview"
+                },
+                {
+                    "pattern": "detail/{invoicePath}",
+                    "name": "detail",
+                    "target": "detail"
+                }
+            ],
+            "targets": {
+                "overview": {
+                    "id": "overview",
+                    "name": "OverView"
+                },
+                "detail": {
+                    "id": "detail",
+                    "name": "Detail"
+                }
             }
-        ]
         }
     }
 }
