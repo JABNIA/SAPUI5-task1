@@ -65,7 +65,7 @@ sap.ui.define([
                 })
                 aFilter.push(oStatusFilter);
             }
-            oBinding.filter(aFilter, sap.ui.model.FilterType.Application)
+            oBinding.filter(aFilter, FilterOperator.Contains)
     }
 });
 }); 
