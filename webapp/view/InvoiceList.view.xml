@@ -10,6 +10,7 @@
                 <Title text="{i18n>invoiceListTitle}" />
                 <ToolbarSpacer />
                 <SearchField
+                    id="invoiceSearchField"
                     width="50%"
                     search=".onFilterInvoices"
                 />

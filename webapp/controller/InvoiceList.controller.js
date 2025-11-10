@@ -1,71 +1,109 @@
-sap.ui.define([
-    "sap/ui/core/mvc/Controller",
-    "sap/ui/model/json/JSONModel",
-    "sap/ui/model/Filter",
-    "sap/ui/model/FilterOperator",
-    "../model/formatter"
-], (Controller, JSONModel, Filter, FilterOperator, Formatter) => {
-    "use strict"
+sap.ui.define(
+    [
+        "sap/ui/core/mvc/Controller",
+        "sap/ui/model/json/JSONModel",
+        "sap/ui/model/Filter",
+        "sap/ui/model/FilterOperator",
+        "../model/formatter",
+    ],
+    (Controller, JSONModel, Filter, FilterOperator, Formatter) => {
+        "use strict";
 
-    return Controller.extend("ui5.walkthrough.controller.InvoiceList", {
-        onInit() {
-            const oInvoice = new JSONModel();
-            this.formater = Formatter
-            oInvoice.loadData("../Invoices.json");
-            oInvoice.attachRequestCompleted(() => {
-                const statusSet = new Set(["All", ...oInvoice.getData().Invoices.map(e => e.Status)])
-                const statuses = Array.from(statusSet)
-                
-                const oStatusModel = new JSONModel({
-                    statusCollection: statuses.map(status => {return {key: status, text: status}})
-                })
-                this.getView().setModel(oStatusModel, "allStatuses");
-            });
+        return Controller.extend("ui5.walkthrough.controller.InvoiceList", {
+            onInit() {
+                const oInvoice = new JSONModel();
+                this.formater = Formatter;
+                oInvoice.loadData("../Invoices.json");
+                oInvoice.attachRequestCompleted(() => {
+                    const statusSet = new Set([
+                        "All",
+                        ...oInvoice.getData().Invoices.map((e) => e.Status),
+                    ]);
+                    const statuses = Array.from(statusSet);
 
-            const oViewModel = new JSONModel({
-                currency: "EUR"
-            });
-            this.getView().setModel(oViewModel, "view")
-        },
+                    const oStatusModel = new JSONModel({
+                        statusCollection: statuses.map((status) => {
+                            return { key: status, text: status };
+                        }),
+                    });
+                    this.getView().setModel(oStatusModel, "allStatuses");
+                });
 
-        onFilterInvoices(oEvent) {
-            const aFilter = [];
-            const sQuery = oEvent.getParameter("query")
-            
-            if(sQuery){
-                aFilter.push(new Filter("ProductName", FilterOperator.Contains, sQuery))
-            }
+                const oViewModel = new JSONModel({
+                    currency: "EUR",
+                });
+                this.getView().setModel(oViewModel, "view");
+            },
 
-            const oList = this.byId("invoiceList");
-            const oBinding = oList.getBinding("items");
-            oBinding.filter(aFilter);
-        },
+            onFilterInvoices(oEvent) {
+                const aFilter = [];
+                const sQuery = oEvent.getParameter("query");
 
-        onPress(oEvent){
-            const oItem = oEvent.getSource();
-            const oRouter = this.getOwnerComponent().getRouter();
-            oRouter.navTo("detail", {
-                invoicePath: window.encodeURIComponent(oItem.getBindingContext("invoice").getPath().substring(1))
-            }
-            );
-        },
+                if (sQuery) {
+                    aFilter.push(
+                        new Filter(
+                            "ProductName",
+                            FilterOperator.Contains,
+                            sQuery
+                        )
+                    );
+                }
 
-        onSelectionChange(oEvent){
-            const aFilter = [];
-            const sStatusCode = oEvent.getParameter("selectedItem").getKey()
+                const oList = this.byId("invoiceList");
+                const oBinding = oList.getBinding("items");
+                oBinding.filter(aFilter);
+            },
 
-            const oList = this.byId("invoiceList");
-            const oBinding = oList.getBinding("items");
+            onPress(oEvent) {
+                const oItem = oEvent.getSource();
+                const oRouter = this.getOwnerComponent().getRouter();
+                oRouter.navTo("detail", {
+                    invoicePath: window.encodeURIComponent(
+                        oItem
+                            .getBindingContext("invoice")
+                            .getPath()
+                            .substring(1)
+                    ),
+                });
+            },
 
-            if (sStatusCode && sStatusCode !== "All") {
-                const oStatusFilter = new sap.ui.model.Filter({
-                    path: "Status",
-                    operator: sap.ui.model.FilterOperator.EQ,
-                    value1: sStatusCode
-                })
-                aFilter.push(oStatusFilter);
-            }
-            oBinding.filter(aFilter, FilterOperator.Contains)
+            onSelectionChange(oEvent) {
+                const aFilter = [];
+                const sStatusCode = oEvent
+                    .getParameter("selectedItem")
+                    .getKey();
+                const sSearchValue = this.byId("invoiceSearchField").getValue();
+
+                const oList = this.byId("invoiceList");
+                const oBinding = oList.getBinding("items");
+
+                if (sStatusCode && sStatusCode !== "All") {
+                    const oStatusFilter = new sap.ui.model.Filter({
+                        path: "Status",
+                        operator: sap.ui.model.FilterOperator.EQ,
+                        value1: sStatusCode,
+                    });
+                    aFilter.push(
+                        new Filter(
+                            "ProductName",
+                            FilterOperator.Contains,
+                            sSearchValue
+                        )
+                    );
+                    aFilter.push(oStatusFilter);
+                }
+                if(sStatusCode === "All"){
+                    aFilter.push(
+                        new Filter(
+                            "ProductName",
+                            FilterOperator.Contains,
+                            sSearchValue
+                        ));
+                    }
+                console.log(sSearchValue);
+
+                oBinding.filter(aFilter, FilterOperator.Contains);
+            },
+        });
     }
-});
-}); 
+);

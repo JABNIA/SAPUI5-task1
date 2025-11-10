@@ -4,7 +4,6 @@ sap.ui.define([], () => {
 	return {
 		statusText(sStatus) {
 			const oResourceBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
-            console.log(oResourceBundle)
             switch (sStatus) {
 				case "A":
 					return oResourceBundle.getText("invoiceStatusA");
